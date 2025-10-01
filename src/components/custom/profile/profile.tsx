@@ -3,49 +3,53 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Edit, Save, X, BookOpen, Heart, Star, Award } from "lucide-react"
+import { Camera, Edit, Save, X } from "lucide-react"
 import { MainLayout } from "@/layout/main-layout"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import type { Recipe, User } from "@/interface"
+import { Link } from "react-router-dom"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 export default function ProfilePage() {
+  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
-  const [profile, setProfile] = useState({
-    name: "Nguyễn Văn A",
-    email: "nguyenvana@email.com",
-    bio: "Đầu bếp nghiệp dư yêu thích khám phá các món ăn truyền thống Việt Nam",
-    location: "Hà Nội, Việt Nam",
-    joinDate: "Tham gia từ tháng 3, 2024",
+  const queryClient = useQueryClient()
+  const currentUser = queryClient.getQueryData<User>(["user"])
+
+  if (!currentUser) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center h-screen ">
+          <h1 className="text-2xl font-bold">Không tìm thấy thông tin người dùng</h1>
+          <h1 className="text-xl">Vui lòng đăng nhập</h1>
+          <Button variant="outline" className="mt-4">
+            <Link to="/login" className="text-blue-500">Đăng nhập</Link>
+          </Button>
+        </div>
+      </MainLayout>
+    )
+  }
+  const [profile, setProfile] = useState<User>(currentUser)
+
+  const getRecipesByme = async () => {
+    const response = await axios.get(`http://localhost:3000/api/recipe/me`, {
+      headers: {
+        Authorization: `Bearer ${currentUser.token}`
+      }
+    })
+    return response.data
+  }
+
+  const { data: recipes} = useQuery({
+    queryKey: ["recipes"],
+    queryFn: () => getRecipesByme()
   })
 
-  const stats = [
-    { label: "Công thức", value: 24, icon: BookOpen },
-    { label: "Yêu thích", value: 156, icon: Heart },
-    { label: "Đánh giá", value: 4.8, icon: Star },
-    { label: "Huy hiệu", value: 8, icon: Award },
-  ]
+  console.log(recipes)
 
-  const recentRecipes = [
-    { id: 1, name: "Phở Bò Hà Nội", rating: 4.8, favorites: 24, image: "/steaming-pho.png" },
-    { id: 2, name: "Bánh Mì Thịt Nướng", rating: 4.6, favorites: 18, image: "/banh-mi.jpg" },
-    { id: 3, name: "Chè Ba Màu", rating: 4.9, favorites: 32, image: "/che-ba-mau.jpg" },
-  ]
-
-  const achievements = [
-    { name: "Đầu bếp mới", description: "Tạo công thức đầu tiên", earned: true },
-    { name: "Người được yêu thích", description: "Nhận 50 lượt yêu thích", earned: true },
-    { name: "Chuyên gia", description: "Tạo 20 công thức", earned: true },
-    { name: "Ngôi sao", description: "Đạt rating 4.5+", earned: true },
-    { name: "Cộng đồng", description: "Nhận 100 bình luận", earned: false },
-    { name: "Bậc thầy", description: "Tạo 50 công thức", earned: false },
-  ]
-
-  const handleSave = () => {
-    setIsEditing(false)
-    // Save profile logic here
-  }
 
   return (
     <MainLayout>
@@ -68,7 +72,7 @@ export default function ProfilePage() {
                 {isEditing ? (
                   <div className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
-                      <div>
+                      <div className="flex flex-col space-y-2">
                         <Label htmlFor="name">Họ và tên</Label>
                         <Input
                           id="name"
@@ -77,35 +81,20 @@ export default function ProfilePage() {
                           className="bg-background border-border"
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="location">Địa điểm</Label>
-                        <Input
-                          id="location"
-                          value={profile.location}
-                          onChange={(e) => setProfile({ ...profile, location: e.target.value })}
-                          className="bg-background border-border"
-                        />
+                      <div className="flex flex-col space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className="bg-background border-border"></Input>
                       </div>
                     </div>
-                    <div>
-                      <Label htmlFor="bio">Giới thiệu</Label>
-                      <Textarea
-                        id="bio"
-                        value={profile.bio}
-                        onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                        className="bg-background border-border"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button onClick={handleSave} size="sm">
-                        <Save className="mr-2 h-4 w-4" />
-                        Lưu
-                      </Button>
+                    <div className="flex justify-start space-x-4">
                       <Button variant="outline" onClick={() => setIsEditing(false)} size="sm">
-                        <X className="mr-2 h-4 w-4" />
-                        Hủy
-                      </Button>
+                      <X className="mr-2 h-4 w-4" />
+                      Hủy
+                    </Button>
+                    <Button variant="default" onClick={() => setIsEditing(false)} size="sm">
+                      <Save className="mr-2 h-4 w-4" />
+                      Lưu
+                    </Button>
                     </div>
                   </div>
                 ) : (
@@ -118,19 +107,13 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                     <p className="text-muted-foreground">{profile.email}</p>
-                    <p className="text-sm">{profile.bio}</p>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>{profile.location}</span>
-                      <span>•</span>
-                      <span>{profile.joinDate}</span>
-                    </div>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-border">
+            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-border">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center">
                   <div className="flex items-center justify-center mb-2">
@@ -140,7 +123,7 @@ export default function ProfilePage() {
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
@@ -148,38 +131,26 @@ export default function ProfilePage() {
         <Tabs defaultValue="recipes" className="space-y-4">
           <TabsList className="bg-muted">
             <TabsTrigger value="recipes">Công thức của tôi</TabsTrigger>
-            <TabsTrigger value="achievements">Thành tích</TabsTrigger>
-            <TabsTrigger value="settings">Cài đặt</TabsTrigger>
           </TabsList>
 
           <TabsContent value="recipes" className="space-y-4">
             <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle>Công thức gần đây</CardTitle>
-                <CardDescription>Những công thức bạn đã tạo gần đây</CardDescription>
+                <CardTitle>Công thức của tôi</CardTitle>
+                <CardDescription>Những công thức bạn đã tạo</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {recentRecipes.map((recipe) => (
+                {recipes?.map((recipe: Recipe) => (
                   <div key={recipe.id} className="flex items-center space-x-4 p-4 rounded-lg bg-accent/50">
                     <img
-                      src={recipe.image || "/placeholder.svg"}
+                      src={recipe.image_url || "/placeholder.svg"}
                       alt={recipe.name}
                       className="h-16 w-16 rounded-lg object-cover"
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{recipe.name}</h3>
-                      <div className="flex items-center space-x-4 mt-1">
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm">{recipe.rating}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Heart className="h-4 w-4 text-red-500" />
-                          <span className="text-sm">{recipe.favorites}</span>
-                        </div>
-                      </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/recipes/update/${recipe.id}`)}>
                       Xem chi tiết
                     </Button>
                   </div>
@@ -188,45 +159,7 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="achievements" className="space-y-4">
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle>Huy hiệu & Thành tích</CardTitle>
-                <CardDescription>Những thành tích bạn đã đạt được</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-2">
-                  {achievements.map((achievement) => (
-                    <div
-                      key={achievement.name}
-                      className={`p-4 rounded-lg border ${
-                        achievement.earned ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-border opacity-60"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            achievement.earned ? "bg-primary text-primary-foreground" : "bg-muted"
-                          }`}
-                        >
-                          <Award className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">{achievement.name}</h3>
-                          <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                        </div>
-                      </div>
-                      {achievement.earned && (
-                        <Badge variant="secondary" className="mt-2">
-                          Đã đạt được
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+
 
           <TabsContent value="settings" className="space-y-4">
             <Card className="bg-card border-border">

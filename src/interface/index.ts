@@ -17,4 +17,5 @@ export interface Recipe {
   totalCount: number | undefined;
   ingredient: { ingredientName: string; quantity: string }[];
   step: { stepTitle: string; content: string }[];
+  hasFavorites: boolean;
 }

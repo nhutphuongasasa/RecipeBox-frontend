@@ -246,14 +246,17 @@ export default function CreateRecipePage() {
                     />
 
                     {/* Nút chọn hình ảnh */}
-                    <label htmlFor="image-upload">
-                      <Button variant="outline" asChild>
-                        <span>
-                          <Upload className="mr-2 h-4 w-4" />
-                          Chọn hình ảnh
-                        </span>
-                      </Button>
-                    </label>
+                    {!recipe.image_url && 
+                      <label htmlFor="image-upload">
+                        <Button variant="outline" asChild>
+                          <span>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Chọn hình ảnh
+                          </span>
+                        </Button>
+                      </label>
+                    }
+                    
 
                     {/* Hiển thị preview nếu đã upload */}
                     {recipe.image_url && (

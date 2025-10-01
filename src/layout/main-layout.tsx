@@ -13,6 +13,7 @@ const navigation = [
   { name: "Tạo công thức", href: "/recipes/create", icon: Plus },
   { name: "Yêu thích", href: "/favorites", icon: Heart },
   { name: "Hồ sơ", href: "/profile", icon: User },
+  { name: "Thống kê", href: "/stats", icon: BarChart3 },
 ]
 
 export function MainLayout({ children }: MainLayoutProps) {

@@ -552,7 +552,6 @@
 // }
 
 
-"use client"
 
 import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
@@ -561,20 +560,10 @@ import axios from "axios"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-  Heart,
-  Star,
-  Clock,
-  Users,
-  Share2,
-  Bookmark,
-  MessageCircle,
-  ThumbsUp,
-  Edit,
-  Flag,
+  Heart
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { MainLayout } from "@/layout/main-layout"
@@ -583,22 +572,23 @@ import toast from "react-hot-toast"
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [isFavorited, setIsFavorited] = useState(false)
   const queryClient = useQueryClient()
   const currentUser = queryClient.getQueryData<User>(['user'])
-
+  
   // Fetch recipe data
   const fetchRecipe = async (): Promise<Recipe> => {
     const res = await axios.get(`http://localhost:3000/api/recipe/${id}`)
     console.log(res.data)
     return res.data
   }
-
+  
   const { data: recipe, isLoading, error } = useQuery({
     queryKey: ["recipe", id],
     queryFn: fetchRecipe,
     staleTime: 1000 * 60,
   })
+
+  const [isFavorited, setIsFavorited] = useState(recipe?.hasFavorites)
 
   const { data: relatedRecipes = []} = useQuery({
     queryKey: ["relatedRecipes", id],
@@ -621,27 +611,42 @@ export default function RecipeDetailPage() {
     enabled: !!recipe?.authorId
   })
 
+    const handleFavorite = async () => {
+      if(!currentUser){
+        toast.error("Vui lòng đăng nhập để thêm vào yêu thích")
+        return
+      }
 
-  const handleFavorite = async () => {
-    if (!currentUser) {
-      toast.error("Vui lòng đăng nhập để thực hiện thao tác này!")
-      return
+      if (isFavorited){
+        const response = await axios.delete(`http://localhost:3000/api/favorite/${recipe?.id}`, {
+          headers: {
+            Authorization: `Bearer ${currentUser?.token}`,
+          },
+        })
+        .then(() => {
+          setIsFavorited(false)
+          toast.success("Đã xóa khỏi yêu thích")
+        })
+        .catch((error) => {
+          console.log(error)
+          toast.error("Lỗi khi xóa khỏi yêu thích")
+        })
+      }else{
+        const response = await axios.post(`http://localhost:3000/api/favorite/`,{
+            recipeId: recipe?.id,
+        }, {
+            headers:{
+                Authorization: `Bearer ${currentUser?.token}`
+            }
+        }).then(() => {
+            setIsFavorited(true)
+            toast.success("Đã thêm vào yêu thích")
+        }).catch((error) => {
+            console.log(error)
+            toast.error("Lỗi khi thêm vào yêu thích")
+        })
+      }
     }
-    console.log(currentUser.token)
-    try {
-      await axios.post(`http://localhost:3000/api/favorite`,{
-        recipeId: id,
-      },{
-        headers: {
-          Authorization: `Bearer ${currentUser?.token}`
-        }
-      }) 
-      setIsFavorited(!isFavorited)
-      toast.success(isFavorited ? "Đã bỏ thích!" : "Đã thích công thức!")
-    } catch (error) {
-      toast.error("Thao tác thất bại!")
-    }
-  }
 
 
   if (isLoading) return <div>Loading...</div>
@@ -696,7 +701,9 @@ export default function RecipeDetailPage() {
                   size="sm"
                   onClick={handleFavorite}
                 >
-                  <Heart className={`mr-2 h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
+                  {isFavorited ?
+                  <Heart className={`mr-2 h-4 w-4 fill-rose-400 stroke-0`} /> :
+                  <Heart className={`mr-2 h-4 w-4`} />}
                   Thích
                 </Button>
 
