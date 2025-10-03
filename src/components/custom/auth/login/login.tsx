@@ -23,7 +23,7 @@ export default function LoginPage() {
     password: "",
   })
 
-  const responseLogin = async () => await axios.post("http://localhost:3000/api/user/login", formData)
+  const responseLogin = async () => await axios.post("https://recipebox-backend.onrender.com/api/user/login", formData)
 
   const mutation = useMutation({
     mutationFn: responseLogin,

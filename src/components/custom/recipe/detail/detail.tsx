@@ -577,7 +577,7 @@ export default function RecipeDetailPage() {
   
   // Fetch recipe data
   const fetchRecipe = async (): Promise<Recipe> => {
-    const res = await axios.get(`http://localhost:3000/api/recipe/${id}`)
+    const res = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/${id}`)
     console.log(res.data)
     return res.data
   }
@@ -593,7 +593,7 @@ export default function RecipeDetailPage() {
   const { data: relatedRecipes = []} = useQuery({
     queryKey: ["relatedRecipes", id],
     queryFn: async () => {
-      const res = await axios.get(`http://localhost:3000/api/recipe`,{
+      const res = await axios.get(`https://recipebox-backend.onrender.com/api/recipe`,{
         params: {page: 1, limit: 3},
       });
       return res.data.recipes;
@@ -605,7 +605,7 @@ export default function RecipeDetailPage() {
     queryFn: async () => {
       if (!recipe?.authorId) return null
       console.log(recipe.authorId)
-      const res = await axios.get(`http://localhost:3000/api/user/${recipe.authorId}`)
+      const res = await axios.get(`https://recipebox-backend.onrender.com/api/user/${recipe.authorId}`)
       return res.data
     },
     enabled: !!recipe?.authorId
@@ -618,7 +618,7 @@ export default function RecipeDetailPage() {
       }
 
       if (isFavorited){
-        const response = await axios.delete(`http://localhost:3000/api/favorite/${recipe?.id}`, {
+        const response = await axios.delete(`https://recipebox-backend.onrender.com/api/favorite/${recipe?.id}`, {
           headers: {
             Authorization: `Bearer ${currentUser?.token}`,
           },
@@ -632,7 +632,7 @@ export default function RecipeDetailPage() {
           toast.error("Lỗi khi xóa khỏi yêu thích")
         })
       }else{
-        const response = await axios.post(`http://localhost:3000/api/favorite/`,{
+        const response = await axios.post(`https://recipebox-backend.onrender.com/api/favorite/`,{
             recipeId: recipe?.id,
         }, {
             headers:{

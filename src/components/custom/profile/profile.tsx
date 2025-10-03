@@ -35,7 +35,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<User>(currentUser)
 
   const getRecipesByme = async () => {
-    const response = await axios.get(`http://localhost:3000/api/recipe/me`, {
+    const response = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/me`, {
       headers: {
         Authorization: `Bearer ${currentUser.token}`
       }

@@ -22,7 +22,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
       }
 
       if (isFavorite){
-        const response = await axios.delete(`http://localhost:3000/api/favorite/${recipe.id}`, {
+        const response = await axios.delete(`https://recipebox-backend.onrender.com/api/favorite/${recipe.id}`, {
           headers: {
             Authorization: `Bearer ${currentUser?.token}`,
           },
@@ -36,7 +36,7 @@ export const RecipeCard = ({ recipe }: { recipe: Recipe }) => {
           toast.error("Lỗi khi xóa khỏi yêu thích")
         })
       }else{
-        const response = await axios.post(`http://localhost:3000/api/favorite/`,{
+        const response = await axios.post(`https://recipebox-backend.onrender.com/api/favorite/`,{
             recipeId: recipe.id,
         }, {
             headers:{

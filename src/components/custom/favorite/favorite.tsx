@@ -10,7 +10,7 @@ const favoritePage = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([])
 
   const responseAllRecipes = async () => {
-    const res = await axios.get('http://localhost:3000/api/recipe')
+    const res = await axios.get('https://recipebox-backend.onrender.com/api/recipe')
     return res.data.recipes
   }
 

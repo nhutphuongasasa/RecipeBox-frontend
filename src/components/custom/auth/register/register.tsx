@@ -23,7 +23,7 @@ export default function RegisterPage() {
     confirmPassword: "",
   })
 
-  const reponseRegister = async () => await axios.post("http://localhost:3000/api/user/register", formData) 
+  const reponseRegister = async () => await axios.post("https://recipebox-backend.onrender.com/api/user/register", formData) 
 
   const mutation = useMutation({
     mutationFn: reponseRegister,

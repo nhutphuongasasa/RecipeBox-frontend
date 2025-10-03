@@ -37,7 +37,7 @@ export default function UserFavoriteStatsPage() {
 
   
   const countFavoriteRecipe = async () => {
-    const response = await axios.get("http://localhost:3000/api/recipe/top", {
+    const response = await axios.get("https://recipebox-backend.onrender.com/api/recipe/top", {
       headers: {
         Authorization: `Bearer ${currentUser?.token}`,
       },
@@ -81,7 +81,7 @@ export default function UserFavoriteStatsPage() {
         const results = await Promise.all(
         categories.map(async (cat) => {
             try {
-            const res = await axios.get(`http://localhost:3000/api/recipe/count/${cat.value}`, {
+            const res = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/count/${cat.value}`, {
                 headers: { Authorization: `Bearer ${currentUser?.token}` },
             });
             console.log("categoryData:", res.data);

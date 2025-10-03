@@ -17,7 +17,7 @@ import type { Recipe } from "@/interface"
 export default function HomePage() {
   const navigate = useNavigate()
     const responseRecipes = async () =>{
-    const res = await axios.get("http://localhost:3000/api/recipe")
+    const res = await axios.get("https://recipebox-backend.onrender.com/api/recipe")
     console.log(res.data)
     return res.data.recipes
   }

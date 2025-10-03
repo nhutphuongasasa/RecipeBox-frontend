@@ -20,7 +20,7 @@ export default function RecipesPage() {
   const pageSize = 1;
 
   const responseRecipes = async () => {
-    const res = await axios.get("http://localhost:3000/api/recipe", {
+    const res = await axios.get("https://recipebox-backend.onrender.com/api/recipe", {
       params: { page: currentPage, limit: pageSize },
     });
     console.log("responseRecipes data:", res.data);
@@ -28,7 +28,7 @@ export default function RecipesPage() {
   };
 
   const responseRecipesByCategory = async () => {
-    const res = await axios.get(`http://localhost:3000/api/recipe/category/${selectedCategory}`, {
+    const res = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/category/${selectedCategory}`, {
       params: { page: currentPage, limit: pageSize },
     });
     console.log("responseRecipesByCategory data:", res.data);
@@ -37,7 +37,7 @@ export default function RecipesPage() {
 
   const responseRecipesBySearch = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/recipe/name/${searchQuery}`);
+      const res = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/name/${searchQuery}`);
       const data = Array.isArray(res.data) ? { recipes: res.data, totalCount: res.data.length } : res.data;
       console.log("responseRecipesBySearch data:", data);
       return data;

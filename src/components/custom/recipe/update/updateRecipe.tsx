@@ -46,7 +46,7 @@ export default function UpdateRecipePage() {
     queryKey: ["recipe", id],
     queryFn: async () => {
       if (!id) throw new Error("Recipe ID is missing");
-      const response = await axios.get(`http://localhost:3000/api/recipe/${id}`, {
+      const response = await axios.get(`https://recipebox-backend.onrender.com/api/recipe/${id}`, {
         headers: {
           Authorization: `Bearer ${currentUser?.token}`,
         },
@@ -192,7 +192,7 @@ export default function UpdateRecipePage() {
       throw new Error("Recipe ID is missing");
     }
     return axios.put(
-      `http://localhost:3000/api/recipe/${id}`,
+      `https://recipebox-backend.onrender.com/api/recipe/${id}`,
       { ...recipe },
       {
         headers: {
