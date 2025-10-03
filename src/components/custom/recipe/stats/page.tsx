@@ -179,7 +179,7 @@ export default function UserFavoriteStatsPage() {
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={favoriteRecipes.sortRecipe}
+                  data={favoriteRecipes?.sortRecipe}
                   layout="vertical"
                   barCategoryGap={50} // khoảng cách giữa các nhóm cột
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
